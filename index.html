@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leon Boois' 63rd Birthday Countdown</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap');
+
+        :root {
+            --primary: #FFD700;
+            --text-main: #ffffff;
+            --text-dim: #e0e0e0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            text-align: center;
+            background-color: #000;
+        }
+
+        /* Background Slideshow */
+        .bg-slideshow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+
+        .bg-slideshow .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 2s ease-in-out, transform 10s linear;
+            transform: scale(1.05);
+        }
+
+        .bg-slideshow .slide.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Overlay to make text readable */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+        
+        .location-label {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            font-size: 1.2rem;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.8);
+            letter-spacing: 2px;
+            z-index: 0;
+            transition: opacity 1s;
+        }
+
+        .container {
+            background: rgba(10, 10, 20, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 3rem 4rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: fadeUp 1s ease forwards;
+            z-index: 10;
+        }
+
+        @keyframes fadeUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+            background: linear-gradient(to right, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0px 4px 10px rgba(0,0,0,0.5);
+        }
+
+        p.subtitle {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+            font-weight: 300;
+        }
+        
+        p.journey {
+            font-size: 1rem;
+            color: #FFD700;
+            margin-bottom: 3rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .countdown {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+        }
+
+        .time-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .time-value {
+            font-size: 4rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.15);
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 15px;
+            box-shadow: inset 0 2px 10px rgba(255, 255, 255, 0.1);
+            margin-bottom: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .time-value::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .time-label {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .fireworks-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        .message {
+            display: none;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #FFD700;
+            animation: pulse 2s infinite;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.8);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .countdown {
+                gap: 1rem;
+            }
+            .time-value {
+                width: 70px;
+                height: 70px;
+                font-size: 2.5rem;
+            }
+            h1 {
+                font-size: 2.2rem;
+            }
+            .container {
+                padding: 2rem;
+            }
+            p.journey {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-slideshow" id="slideshow"></div>
+    <div class="overlay"></div>
+    <div class="location-label" id="location-label">Malaysia</div>
+    <div class="fireworks-container" id="fireworks"></div>
+
+    <div class="container" id="main-container">
+        <h1>Leon Boois</h1>
+        <p class="subtitle">Countdown to 63rd Birthday</p>
+        <p class="journey">English Teacher • Global Traveler</p>
+        
+        <div class="countdown" id="countdown">
+            <div class="time-box">
+                <div class="time-value" id="days">00</div>
+                <div class="time-label">Days</div>
+            </div>
+            <div class="time-box">
+                <div class="time-value" id="hours">00</div>
+                <div class="time-label">Hours</div>
+            </div>
+            <div class="time-box">
+                <div class="time-value" id="minutes">00</div>
+                <div class="time-label">Minutes</div>
+            </div>
+            <div class="time-box">
+                <div class="time-value" id="seconds">00</div>
+                <div class="time-label">Seconds</div>
+            </div>
+        </div>
+
+        <div class="message" id="birthday-message">
+            Happy 63rd Birthday, Leon! 🎊
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        // Background Slideshow Logic
+        const locations = [
+            { name: "Kuala Lumpur, Malaysia", url: "https://images.unsplash.com/photo-1596422846543-75c6fc197f0a?q=80&w=1920&auto=format&fit=crop" },
+            { name: "Taipei, Taiwan", url: "https://images.unsplash.com/photo-1552993873-0aa1140e6336?q=80&w=1920&auto=format&fit=crop" },
+            { name: "Sydney, Australia", url: "https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?q=80&w=1920&auto=format&fit=crop" },
+            { name: "Riyadh, Saudi Arabia", url: "https://images.unsplash.com/photo-1586724237569-f3d0c1ebd8c1?q=80&w=1920&auto=format&fit=crop" },
+            { name: "Istanbul, Turkey", url: "https://images.unsplash.com/photo-1527838832700-5059252407fa?q=80&w=1920&auto=format&fit=crop" },
+            { name: "Paris, France", url: "https://images.unsplash.com/photo-1502602898657-3e90760020c2?q=80&w=1920&auto=format&fit=crop" },
+            { name: "New York, USA", url: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=1920&auto=format&fit=crop" },
+            { name: "Tokyo, Japan", url: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=1920&auto=format&fit=crop" },
+            { name: "Rome, Italy", url: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?q=80&w=1920&auto=format&fit=crop" },
+            { name: "Cairo, Egypt", url: "https://images.unsplash.com/photo-1539650116574-8efeb43e2750?q=80&w=1920&auto=format&fit=crop" },
+            { name: "Rio de Janeiro, Brazil", url: "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?q=80&w=1920&auto=format&fit=crop" },
+            { name: "Cape Town, South Africa", url: "https://images.unsplash.com/photo-1580060839134-75a5edca2e99?q=80&w=1920&auto=format&fit=crop" },
+            { name: "London, UK", url: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=1920&auto=format&fit=crop" }
+        ];
+
+        const slideshow = document.getElementById('slideshow');
+        const label = document.getElementById('location-label');
+        
+        locations.forEach((loc, index) => {
+            const div = document.createElement('div');
+            div.className = `slide ${index === 0 ? 'active' : ''}`;
+            div.style.backgroundImage = `url('${loc.url}')`;
+            slideshow.appendChild(div);
+        });
+
+        let currentSlide = 0;
+        label.innerText = locations[0].name;
+
+        setInterval(() => {
+            const slides = document.querySelectorAll('.slide');
+            slides[currentSlide].classList.remove('active');
+            
+            currentSlide = (currentSlide + 1) % slides.length;
+            
+            slides[currentSlide].classList.add('active');
+            label.innerText = locations[currentSlide].name;
+        }, 6000); // Change image every 6 seconds
+
+
+        // Countdown Logic
+        // Set birthday to August 28 of the current year (2026 based on metadata)
+        const birthday = new Date("August 28, 2026 00:00:00").getTime();
+
+        const x = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = birthday - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = days.toString().padStart(2, '0');
+            document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
+            document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
+            document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
+
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("countdown").style.display = "none";
+                document.querySelector(".subtitle").style.display = "none";
+                document.querySelector(".journey").style.display = "none";
+                const msg = document.getElementById("birthday-message");
+                msg.style.display = "block";
+                
+                // Trigger confetti
+                var duration = 15 * 1000;
+                var animationEnd = Date.now() + duration;
+                var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+
+                function randomInRange(min, max) {
+                  return Math.random() * (max - min) + min;
+                }
+
+                var interval = setInterval(function() {
+                  var timeLeft = animationEnd - Date.now();
+
+                  if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                  }
+
+                  var particleCount = 50 * (timeLeft / duration);
+                  confetti(Object.assign({}, defaults, { particleCount,
+                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+                  }));
+                  confetti(Object.assign({}, defaults, { particleCount,
+                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+                  }));
+                }, 250);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
